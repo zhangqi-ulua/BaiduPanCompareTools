@@ -873,12 +873,8 @@ namespace BaiduPanCompareTools
                 {
                     if (dirDiff.dirsInOldSnapshoot.ContainsKey(dirName) == true)
                     {
-                        DirDiffVO childDirDiff = new DirDiffVO();
-                        childDirDiff.name = dirName;
-                        string path = CombineChildPath(currentDirPath, dirName);
-                        childDirDiff.path = path;
-                        childDirDiff.diffState = DiffStateEnum.None;
-                        dirDiff.childsDiff.Add(CompareTwoDirInfo(dirDiff.dirsInOldSnapshoot[dirName], dirDiff.dirsInNewSnapshoot[dirName], path));
+                        dirDiff.childsDiff.Add(CompareTwoDirInfo(dirDiff.dirsInOldSnapshoot[dirName],
+                            dirDiff.dirsInNewSnapshoot[dirName], CombineChildPath(currentDirPath, dirName)));
                     }
                 }
             }
@@ -1320,17 +1316,103 @@ namespace BaiduPanCompareTools
                 {
                     if (dirDiff.dirsInOldSnapshoot.ContainsKey(dirName) == true)
                     {
-                        DirDiffVO childDirDiff = new DirDiffVO();
-                        childDirDiff.name = dirName;
-                        string path = CombineChildPath(currentDirPath, dirName);
-                        childDirDiff.path = path;
-                        childDirDiff.diffState = DiffStateEnum.None;
-                        dirDiff.childsDiff.Add(CompareTwoDirInfo(dirDiff.dirsInOldSnapshoot[dirName], dirDiff.dirsInNewSnapshoot[dirName], path));
+                        dirDiff.childsDiff.Add(CompareTwoDirInfo(dirDiff.dirsInOldSnapshoot[dirName],
+                            dirDiff.dirsInNewSnapshoot[dirName], CombineChildPath(currentDirPath, dirName)));
                     }
                 }
             }
 
             return dirDiff;
+        }
+
+        private void BtnViewOldSnapshoot_Click(object sender, EventArgs e)
+        {
+            string oldSnapshootFilePath;
+            string oldSnapshootJson;
+            SnapshootInfoVO oldSnapshootInfo;
+
+            string errorString = null;
+
+            oldSnapshootFilePath = TxtOldSnapshootFilePath.Text.Trim();
+            if (string.IsNullOrEmpty(oldSnapshootFilePath) == true)
+            {
+                MessageBox.Show(this, "请输入较老的快照文件路径", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (File.Exists(oldSnapshootFilePath) == false)
+            {
+                MessageBox.Show(this, "输入的较老的快照文件不存在", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (Path.GetExtension(oldSnapshootFilePath) != $".{AppConsts.SNAPSHOOT_FILE_EXTENSION}")
+            {
+                MessageBox.Show(this, $"指定的较老的快照文件不合法，快照文件扩展名应为{AppConsts.SNAPSHOOT_FILE_EXTENSION}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            try
+            {
+                oldSnapshootJson = File.ReadAllText(oldSnapshootFilePath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"读取较老的快照文件失败，异常信息为：\n{ex.ToString()}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            oldSnapshootInfo = SnapshootInfoVO.FromJson(oldSnapshootJson, out errorString);
+            if (errorString != null)
+            {
+                MessageBox.Show(this, $"指定的较老的快照文件解析错误，请使用本工具生成的快照文件，异常信息为：\n{errorString}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // 在快照浏览窗口中展示
+            SnapshootViewerForm snapshootViewer = new SnapshootViewerForm(oldSnapshootFilePath, oldSnapshootInfo);
+            snapshootViewer.ShowDialog();
+        }
+
+        private void BtnViewNewSnapshoot_Click(object sender, EventArgs e)
+        {
+            string newSnapshootFilePath;
+            string newSnapshootJson;
+            SnapshootInfoVO newSnapshootInfo;
+
+            string errorString = null;
+
+            newSnapshootFilePath = TxtNewSnapshootFilePath.Text.Trim();
+            if (string.IsNullOrEmpty(newSnapshootFilePath) == true)
+            {
+                MessageBox.Show(this, "请输入较新的快照文件路径", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (File.Exists(newSnapshootFilePath) == false)
+            {
+                MessageBox.Show(this, "输入的较新的快照文件不存在", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (Path.GetExtension(newSnapshootFilePath) != $".{AppConsts.SNAPSHOOT_FILE_EXTENSION}")
+            {
+                MessageBox.Show(this, $"指定的较新的快照文件不合法，快照文件扩展名应为{AppConsts.SNAPSHOOT_FILE_EXTENSION}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            try
+            {
+                newSnapshootJson = File.ReadAllText(newSnapshootFilePath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"读取较新的快照文件失败，异常信息为：\n{ex.ToString()}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            newSnapshootInfo = SnapshootInfoVO.FromJson(newSnapshootJson, out errorString);
+            if (errorString != null)
+            {
+                MessageBox.Show(this, $"指定的较新的快照文件解析错误，请使用本工具生成的快照文件，异常信息为：\n{errorString}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // 在快照浏览窗口中展示
+            SnapshootViewerForm snapshootViewer = new SnapshootViewerForm(newSnapshootFilePath, newSnapshootInfo);
+            snapshootViewer.ShowDialog();
         }
     }
 }

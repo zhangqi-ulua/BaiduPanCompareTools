@@ -43,6 +43,8 @@
             this.TxtBaiduPanUrl = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.GrpCompareSnapshoot = new System.Windows.Forms.GroupBox();
+            this.BtnViewNewSnapshoot = new System.Windows.Forms.Button();
+            this.BtnViewOldSnapshoot = new System.Windows.Forms.Button();
             this.BtnCompareSnapshoot = new System.Windows.Forms.Button();
             this.TxtCompareNewSnapshootDir = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -216,6 +218,8 @@
             // 
             // GrpCompareSnapshoot
             // 
+            this.GrpCompareSnapshoot.Controls.Add(this.BtnViewNewSnapshoot);
+            this.GrpCompareSnapshoot.Controls.Add(this.BtnViewOldSnapshoot);
             this.GrpCompareSnapshoot.Controls.Add(this.BtnCompareSnapshoot);
             this.GrpCompareSnapshoot.Controls.Add(this.TxtCompareNewSnapshootDir);
             this.GrpCompareSnapshoot.Controls.Add(this.label10);
@@ -233,6 +237,28 @@
             this.GrpCompareSnapshoot.TabIndex = 1;
             this.GrpCompareSnapshoot.TabStop = false;
             this.GrpCompareSnapshoot.Text = "对比百度网盘快照文件，找出发生的变化";
+            // 
+            // BtnViewNewSnapshoot
+            // 
+            this.BtnViewNewSnapshoot.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.BtnViewNewSnapshoot.Location = new System.Drawing.Point(720, 193);
+            this.BtnViewNewSnapshoot.Name = "BtnViewNewSnapshoot";
+            this.BtnViewNewSnapshoot.Size = new System.Drawing.Size(151, 35);
+            this.BtnViewNewSnapshoot.TabIndex = 20;
+            this.BtnViewNewSnapshoot.Text = "浏览较新的快照文件";
+            this.BtnViewNewSnapshoot.UseVisualStyleBackColor = true;
+            this.BtnViewNewSnapshoot.Click += new System.EventHandler(this.BtnViewNewSnapshoot_Click);
+            // 
+            // BtnViewOldSnapshoot
+            // 
+            this.BtnViewOldSnapshoot.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.BtnViewOldSnapshoot.Location = new System.Drawing.Point(554, 193);
+            this.BtnViewOldSnapshoot.Name = "BtnViewOldSnapshoot";
+            this.BtnViewOldSnapshoot.Size = new System.Drawing.Size(151, 35);
+            this.BtnViewOldSnapshoot.TabIndex = 19;
+            this.BtnViewOldSnapshoot.Text = "浏览较老的快照文件";
+            this.BtnViewOldSnapshoot.UseVisualStyleBackColor = true;
+            this.BtnViewOldSnapshoot.Click += new System.EventHandler(this.BtnViewOldSnapshoot_Click);
             // 
             // BtnCompareSnapshoot
             // 
@@ -538,7 +564,7 @@
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "百度网盘对比工具 v1.0.0 by 张齐 （https://github.com/zhangqi-ulua）";
+            this.Text = "百度网盘对比工具 v1.1.0 by 张齐 （https://github.com/zhangqi-ulua）";
             this.GrpGenerateSnapshoot.ResumeLayout(false);
             this.GrpGenerateSnapshoot.PerformLayout();
             this.GrpCompareSnapshoot.ResumeLayout(false);
@@ -599,5 +625,7 @@
         private TextBox TxtIgnoreFileExtension;
         private CheckBox ChkIgnoreFileExtension;
         private Label label16;
+        private Button BtnViewNewSnapshoot;
+        private Button BtnViewOldSnapshoot;
     }
 }

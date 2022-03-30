@@ -34,11 +34,12 @@ namespace BaiduPanCompareTools
 
             TreeNode diffRootTreeNode = GetDiffTreeNode(diff);
             diffRootTreeNode.Text = "[对比的根目录]";
+            TvwDiff.ShowNodeToolTips = true;
             TvwDiff.Nodes.Add(diffRootTreeNode);
             TvwDiff.ExpandAll();
         }
 
-        private List<TreeNode> GetAllChildsTreeNode(List<DirOrFileInfoVO> childs, bool isAdd)
+        private List<TreeNode> GetAllChildsTreeNode(string parentDirPath, List<DirOrFileInfoVO> childs, bool isAdd)
         {
             List<TreeNode> list = new List<TreeNode>();
 
@@ -46,14 +47,23 @@ namespace BaiduPanCompareTools
             {
                 if (child.isDir == true)
                 {
+                    TreeNode childDirNode = new TreeNode();
+                    childDirNode.Text = child.name;
+                    childDirNode.Name = string.Concat(parentDirPath, "/", child.name);
+                    childDirNode.ToolTipText = childDirNode.Name;
+                    childDirNode.ImageIndex = (isAdd == true ? (int)IconEnum.AddDir : (int)IconEnum.DeleteDir);
+                    childDirNode.SelectedImageIndex = (isAdd == true ? (int)IconEnum.AddDir : (int)IconEnum.DeleteDir);
                     DirInfoVO childDir = child as DirInfoVO;
-                    list.AddRange(GetAllChildsTreeNode(childDir.childs, isAdd));
+                    childDirNode.Nodes.AddRange(GetAllChildsTreeNode(string.Concat(parentDirPath, "/", child.name), childDir.childs, isAdd).ToArray());
+                    list.Add(childDirNode);
                 }
                 else
                 {
                     FileInfoVO childFile = child as FileInfoVO;
                     TreeNode childFileNode = new TreeNode();
                     childFileNode.Text = childFile.name;
+                    childFileNode.Name = string.Concat(parentDirPath, "/", child.name);
+                    childFileNode.ToolTipText = childFileNode.Name;
                     childFileNode.ImageIndex = (isAdd == true ? (int)IconEnum.AddFile : (int)IconEnum.DeleteFile);
                     childFileNode.SelectedImageIndex = (isAdd == true ? (int)IconEnum.AddFile : (int)IconEnum.DeleteFile);
                     StringBuilder fileDetailBuilder = new StringBuilder();
@@ -72,20 +82,22 @@ namespace BaiduPanCompareTools
         {
             TreeNode dirRootNode = new TreeNode();
             dirRootNode.Text = diff.name;
+            dirRootNode.Name = diff.path;
+            dirRootNode.ToolTipText = dirRootNode.Name;
 
             if (diff.diffState == DiffStateEnum.Add)
             {
                 dirRootNode.ImageIndex = (int)IconEnum.AddDir;
                 dirRootNode.SelectedImageIndex = (int)IconEnum.AddDir;
                 // 生成下属的所有子文件夹、子文件
-                dirRootNode.Nodes.AddRange(GetAllChildsTreeNode(diff.addOrDeleteDirInfo.childs, true).ToArray());
+                dirRootNode.Nodes.AddRange(GetAllChildsTreeNode(diff.path, diff.addOrDeleteDirInfo.childs, true).ToArray());
             }
             else if (diff.diffState == DiffStateEnum.Delete)
             {
                 dirRootNode.ImageIndex = (int)IconEnum.DeleteDir;
                 dirRootNode.SelectedImageIndex = (int)IconEnum.DeleteDir;
                 // 生成下属的所有子文件夹、子文件
-                dirRootNode.Nodes.AddRange(GetAllChildsTreeNode(diff.addOrDeleteDirInfo.childs, false).ToArray());
+                dirRootNode.Nodes.AddRange(GetAllChildsTreeNode(diff.path, diff.addOrDeleteDirInfo.childs, false).ToArray());
             }
             else
             {
@@ -99,13 +111,15 @@ namespace BaiduPanCompareTools
                         if (childDiff.isDir == true)
                         {
                             DirDiffVO childDirDiff = childDiff as DirDiffVO;
-                            dirRootNode.Nodes.Add((GetDiffTreeNode(childDirDiff)));
+                            dirRootNode.Nodes.Add(GetDiffTreeNode(childDirDiff));
                         }
                         else
                         {
                             FileDiffVO childFileDiff = childDiff as FileDiffVO;
                             TreeNode childFileNode = new TreeNode();
                             childFileNode.Text = childFileDiff.name;
+                            childFileNode.Name = childFileDiff.path;
+                            childFileNode.ToolTipText = childFileNode.Name;
                             if (childFileDiff.diffState == DiffStateEnum.Add)
                             {
                                 childFileNode.ImageIndex = (int)IconEnum.AddFile;

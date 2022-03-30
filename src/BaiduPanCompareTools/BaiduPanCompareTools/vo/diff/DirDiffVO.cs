@@ -7,7 +7,7 @@
             isDir = true;
         }
 
-        // 当DiffState为Delete或Add时，记录较老或较新快照文件中该文件夹的信息
+        // 当DiffState为Delete或Add时，记录较老或较新快照文件中该文件夹的信息（注意是本级目录的DirInfoVO）
         public DirInfoVO addOrDeleteDirInfo { get; set; }
         // 当DiffState为None时，记录子文件夹、子文件的比对信息
         public List<DirOrFileDiffVO> childsDiff { get; set; }
