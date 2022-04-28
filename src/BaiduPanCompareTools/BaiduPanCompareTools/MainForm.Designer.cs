@@ -155,7 +155,7 @@
             this.TxtRequestInterval.Name = "TxtRequestInterval";
             this.TxtRequestInterval.Size = new System.Drawing.Size(100, 23);
             this.TxtRequestInterval.TabIndex = 10;
-            this.TxtRequestInterval.Text = "500";
+            this.TxtRequestInterval.Text = "1000";
             // 
             // label5
             // 

@@ -20,6 +20,13 @@ namespace BaiduPanCompareTools
         {
             InitializeComponent();
 
+            TxtBaiduPanUrl.AllowDrop = true;
+            TxtBaiduPanUrl.DragEnter += new DragEventHandler(UiUtil.TextBoxDragEnter);
+            TxtBaiduPanUrl.DragDrop += new DragEventHandler(BaiduPanUrlAndAccessCodeTextBoxDragDrop);
+            TxtBaiduPanAccessCode.AllowDrop = true;
+            TxtBaiduPanAccessCode.DragEnter += new DragEventHandler(UiUtil.TextBoxDragEnter);
+            TxtBaiduPanAccessCode.DragDrop += new DragEventHandler(BaiduPanUrlAndAccessCodeTextBoxDragDrop);
+
             TxtOldSnapshootFilePath.AllowDrop = true;
             TxtOldSnapshootFilePath.DragEnter += new DragEventHandler(UiUtil.TextBoxDragEnter);
             TxtOldSnapshootFilePath.DragDrop += new DragEventHandler(UiUtil.TextBoxOneFileDragDrop);
@@ -35,6 +42,66 @@ namespace BaiduPanCompareTools
 
             // 忽略计算MD5的文件大小单位，默认选为MB
             Cbo.SelectedIndex = 2;
+        }
+
+        private void BaiduPanUrlAndAccessCodeTextBoxDragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop) == true)
+            {
+                Array dragDropFileArray = e.Data.GetData(DataFormats.FileDrop) as Array;
+                if (dragDropFileArray.Length != 1)
+                {
+                    MessageBox.Show("若要通过拖拽进一个快照文件，读取并自动填上其中存储的百度网盘链接和提取码，请只拖入一个快照文件", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                string path = dragDropFileArray.GetValue(0).ToString();
+                if (Directory.Exists(path) == true)
+                {
+                    MessageBox.Show("若要通过拖拽进一个快照文件，读取并自动填上其中存储的百度网盘链接和提取码，请拖入一个快照文件而不是文件夹", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                else
+                {
+                    if (File.Exists(path))
+                    {
+                        string snapshootJson;
+                        SnapshootInfoVO snapshootInfo;
+                        string errorString;
+                        try
+                        {
+                            snapshootJson = File.ReadAllText(path);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(this, $"尝试通过拖拽进一个快照文件，读取并自动填上其中存储的百度网盘链接和提取码，但读取快照文件失败，异常信息为：\n{ex.ToString()}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        snapshootInfo = SnapshootInfoVO.FromJson(snapshootJson, out errorString);
+                        if (errorString != null)
+                        {
+                            MessageBox.Show(this, $"尝试通过拖拽进一个快照文件，读取并自动填上其中存储的百度网盘链接和提取码，但快照文件解析错误，请使用本工具生成的快照文件，异常信息为：\n{errorString}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        TxtBaiduPanUrl.Text = snapshootInfo.baiduPanUrl;
+                        TxtBaiduPanAccessCode.Text = snapshootInfo.baiduPanAccessCode;
+                    }
+                    else
+                    {
+                        MessageBox.Show("若要通过拖拽进一个快照文件，读取并自动填上其中存储的百度网盘链接和提取码，请拖入一个快照文件", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    if (Path.GetExtension(path) != $".{AppConsts.SNAPSHOOT_FILE_EXTENSION}")
+                    {
+                        MessageBox.Show($"若要通过拖拽进一个快照文件，读取并自动填上其中存储的百度网盘链接和提取码，请拖入一个扩展名为{AppConsts.SNAPSHOOT_FILE_EXTENSION}的快照文件", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show($"若要通过拖拽进一个快照文件，读取并自动填上其中存储的百度网盘链接和提取码，请正确拖入一个扩展名为{AppConsts.SNAPSHOOT_FILE_EXTENSION}的快照文件", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
 
         private void BtnGenerateSnapshoot_Click(object sender, EventArgs e)
@@ -209,14 +276,15 @@ namespace BaiduPanCompareTools
                 return;
             }
             AppendTextToConsole("链接有效");
-
+            if (AppConsts.REQ_BAIDU_PAN_API_INTERVAL > 0)
+                Thread.Sleep(AppConsts.REQ_BAIDU_PAN_API_INTERVAL);
             AppendTextToConsole("请求验证提取码：");
             /**
              * 验证输入的提取码是否正确
              */
             // surl为请求的百度网盘地址https://pan.baidu.com/s/1XXXXX，去掉1之后的剩余XXXXX部分
             string surl = baiduPanUrl.Substring(AppConsts.BAIDU_PAN_URL_PREFIX.Length + 1);
-            string verifyUrl = $"https://pan.baidu.com/share/verify?channel=chunlei&clienttype=0&web=1&app_id=250528&surl={surl}";
+            string verifyUrl = $"http://pan.baidu.com/share/verify?channel=chunlei&clienttype=0&web=1&app_id=250528&surl={surl}";
             HttpRequestMessage verifyReq = new HttpRequestMessage();
             verifyReq.Method = HttpMethod.Post;
             verifyReq.RequestUri = new Uri(verifyUrl);
@@ -246,7 +314,8 @@ namespace BaiduPanCompareTools
                 return;
             }
             AppendTextToConsole("提取码正确");
-
+            if (AppConsts.REQ_BAIDU_PAN_API_INTERVAL > 0)
+                Thread.Sleep(AppConsts.REQ_BAIDU_PAN_API_INTERVAL);
             AppendTextToConsole("再次请求访问百度网盘链接：");
             /**
              * 通过校验后，再次访问百度网盘链接，因为之前校验通过后服务器返回名为BDCLND的Cookie，带着此Cookie重新访问百度网盘地址就能看到分享的文件
@@ -485,6 +554,7 @@ namespace BaiduPanCompareTools
             }
             if (returnContent.Contains("\"errno\":0") == true)
             {
+                //AppendTextToConsole($"返回json为：{returnContent}");
                 /**
                  * 解析该路径下的所有子文件夹和文件，对于子文件夹继续向下逐层解析
                  */

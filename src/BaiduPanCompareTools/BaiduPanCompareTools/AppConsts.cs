@@ -7,7 +7,9 @@ namespace BaiduPanCompareTools
         // 本工具保存的百度网盘快照文件扩展名
         public const string SNAPSHOOT_FILE_EXTENSION = "bdps";
         // 请求百度网盘时的User-Agent
-        public const string USER_AGENT = "Mozilla/4.0 (compatible; MSIE 9.0; Windows NT 6.1)";
+        public const string USER_AGENT = "netdisk";
+        // 连续发出请求百度网盘服务器的时间间隔（毫秒）
+        public const int REQ_BAIDU_PAN_API_INTERVAL = 1000;
 
         // 百度网盘链接地址的开头字符串
         public const string BAIDU_PAN_URL_PREFIX = "https://pan.baidu.com/s/";
