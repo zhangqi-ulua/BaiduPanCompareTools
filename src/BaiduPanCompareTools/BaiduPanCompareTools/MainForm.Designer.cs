@@ -564,7 +564,7 @@
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "百度网盘对比工具 v1.1.0 by 张齐 （https://github.com/zhangqi-ulua）";
+            this.Text = "百度网盘对比工具 v1.2.0 by 张齐 （https://github.com/zhangqi-ulua）";
             this.GrpGenerateSnapshoot.ResumeLayout(false);
             this.GrpGenerateSnapshoot.PerformLayout();
             this.GrpCompareSnapshoot.ResumeLayout(false);
