@@ -2,3 +2,25 @@
 src/BaiduPanCompareTools/BaiduPanCompareTools/obj/
 
 src/BaiduPanCompareTools/.vs/
+
+release/Release/net6.0-windows/win-x64/
+
+release/Release/net6.0-windows/BaiduPanCompareTools.deps.json
+
+release/Release/net6.0-windows/BaiduPanCompareTools.dll
+
+release/Release/net6.0-windows/BaiduPanCompareTools.exe
+
+release/Release/net6.0-windows/BaiduPanCompareTools.pdb
+
+release/Release/net6.0-windows/BaiduPanCompareTools.runtimeconfig.json
+
+release/Release/net6.0-windows/Newtonsoft.Json.dll
+
+release/Debug/
+
+release/Release/net6.0-windows/publish/win-x64/BaiduPanCompareTools.pdb
+
+src/BaiduPanCompareTools/BaiduPanCompareTools/Properties/PublishProfiles/FolderProfile.pubxml.user
+
+src/BaiduPanCompareTools/BaiduPanCompareTools/BaiduPanCompareTools.csproj.user

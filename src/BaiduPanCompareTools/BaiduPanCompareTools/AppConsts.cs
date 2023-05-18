@@ -21,12 +21,24 @@ namespace BaiduPanCompareTools
         public const int SHARE_LIST_ONE_PAGE_MAX_NUM = 100;
         // 百度网盘链接不存在时的提示
         public const string BAIDU_PAN_URL_NOT_FOUND_TIPS = "啊哦，你所访问的页面不存在了。";
-        // 百度网盘链接取消分享时的提示
-        public const string BAIDU_PAN_URL_CANCEL_TIPS = "啊哦，你来晚了，分享的文件已经被取消了，下次要早点哟。";
-        // 百度网盘链接禁止访问时的提示
-        public const string BAIDU_PAN_URL_FORBID_TIPS = "此链接分享内容可能因为涉及侵权、色情、反动、低俗等信息，无法访问！";
         // 百度网盘输入提取码页面的提示
         public const string BAIDU_PAN_URL_INPUT_ACCESS_CODE_TIPS = "请输入提取码";
+        // 链接错误码对应的描述文本
+        public static readonly Dictionary<int, string> ERROR_TYPE_TO_DESC = new Dictionary<int, string>()
+        {
+            {0, "啊哦，你来晚了，分享的文件已经被删除了，下次要早点哟。"},
+            {1, "啊哦，你来晚了，分享的文件已经被取消了，下次要早点哟。"},
+            {2, "此链接分享内容暂时不可访问"},
+            {3, "此链接分享内容可能因为涉及侵权、色情、反动、低俗等信息，无法访问！"},
+            {5, "啊哦！链接错误没找到文件，请打开正确的分享链接!"},
+            {10, "啊哦，来晚了，该分享文件已过期"},
+            {11, "由于访问次数过多，该分享链接已失效"},
+            {12, "因该分享含有自动备份文件夹，暂无法查看"},
+            {15, "系统升级，链接暂时无法查看，升级完成后恢复正常。"},
+            {17, "该链接访问范围受限，请使用正常的访问方式"},
+            {123, "该链接已超过访问人数上限，可联系分享者重新分享"},
+            {124, "您访问的链接已被冻结，可联系分享者进行激活"},
+        };
 
         /// <summary>
         /// 判断输入的百度网盘提取码格式是否正确，必须为4位英文字母（不区分大小写）或数字

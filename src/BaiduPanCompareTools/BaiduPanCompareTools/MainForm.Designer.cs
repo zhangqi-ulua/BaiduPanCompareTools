@@ -75,6 +75,7 @@
             this.label14 = new System.Windows.Forms.Label();
             this.BtnChooseSnapshootFile = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
+            this.BtnViewBaiduPanUrlAndCopyAccessCode = new System.Windows.Forms.Button();
             this.GrpGenerateSnapshoot.SuspendLayout();
             this.GrpCompareSnapshoot.SuspendLayout();
             this.GrpCompareSnapshootAndLocalDir.SuspendLayout();
@@ -83,6 +84,7 @@
             // 
             // GrpGenerateSnapshoot
             // 
+            this.GrpGenerateSnapshoot.Controls.Add(this.BtnViewBaiduPanUrlAndCopyAccessCode);
             this.GrpGenerateSnapshoot.Controls.Add(this.label12);
             this.GrpGenerateSnapshoot.Controls.Add(this.TxtWaitServerMaxMillisecond);
             this.GrpGenerateSnapshoot.Controls.Add(this.label11);
@@ -188,7 +190,7 @@
             this.TxtBaiduPanAccessCode.Location = new System.Drawing.Point(568, 66);
             this.TxtBaiduPanAccessCode.MaxLength = 4;
             this.TxtBaiduPanAccessCode.Name = "TxtBaiduPanAccessCode";
-            this.TxtBaiduPanAccessCode.Size = new System.Drawing.Size(100, 23);
+            this.TxtBaiduPanAccessCode.Size = new System.Drawing.Size(62, 23);
             this.TxtBaiduPanAccessCode.TabIndex = 3;
             // 
             // label2
@@ -549,6 +551,16 @@
             this.label16.Text = "注意：1、百度网盘服务器记录的MD5不是文件本身的MD5，而是将本身的MD5经过算法运算得到32位字符串。为了加以区分，本工具分别称为“百度MD5”和“本地MD5" +
     "”\r\n         2、如果分享的链接中仅包含单个文件，百度网盘服务器返回的文件信息中无MD5（个人认为是百度网盘的BUG），故这种情况下无法对比文件";
             // 
+            // BtnViewBaiduPanUrlAndCopyAccessCode
+            // 
+            this.BtnViewBaiduPanUrlAndCopyAccessCode.Location = new System.Drawing.Point(674, 66);
+            this.BtnViewBaiduPanUrlAndCopyAccessCode.Name = "BtnViewBaiduPanUrlAndCopyAccessCode";
+            this.BtnViewBaiduPanUrlAndCopyAccessCode.Size = new System.Drawing.Size(197, 23);
+            this.BtnViewBaiduPanUrlAndCopyAccessCode.TabIndex = 16;
+            this.BtnViewBaiduPanUrlAndCopyAccessCode.Text = "打开百度网盘链接并复制提取码";
+            this.BtnViewBaiduPanUrlAndCopyAccessCode.UseVisualStyleBackColor = true;
+            this.BtnViewBaiduPanUrlAndCopyAccessCode.Click += new System.EventHandler(this.BtnViewBaiduPanUrlAndCopyAccessCode_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
@@ -564,7 +576,7 @@
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "百度网盘对比工具 v1.2.0 by 张齐 （https://github.com/zhangqi-ulua）";
+            this.Text = "百度网盘对比工具 v1.3.0 by 张齐 （https://github.com/zhangqi-ulua）";
             this.GrpGenerateSnapshoot.ResumeLayout(false);
             this.GrpGenerateSnapshoot.PerformLayout();
             this.GrpCompareSnapshoot.ResumeLayout(false);
@@ -627,5 +639,6 @@
         private Label label16;
         private Button BtnViewNewSnapshoot;
         private Button BtnViewOldSnapshoot;
+        private Button BtnViewBaiduPanUrlAndCopyAccessCode;
     }
 }

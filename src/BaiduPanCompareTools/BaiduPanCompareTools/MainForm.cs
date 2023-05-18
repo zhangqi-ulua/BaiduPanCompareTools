@@ -2,6 +2,7 @@ using BaiduPanCompareTools.utils;
 using BaiduPanCompareTools.vo.diff;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -260,15 +261,43 @@ namespace BaiduPanCompareTools
                 return;
             }
 
-            if (returnContent.Contains(AppConsts.BAIDU_PAN_URL_CANCEL_TIPS))
+            if (returnContent.Contains(AppConsts.BAIDU_PAN_URL_NOT_FOUND_TIPS))
             {
-                MessageBox.Show(this, $"请求百度网盘（{baiduPanUrl}）发生错误，该链接已经取消分享", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, $"该百度网盘链接（{baiduPanUrl}）已不存在", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            else if (returnContent.Contains(AppConsts.BAIDU_PAN_URL_FORBID_TIPS))
+            // 从页面中根据errortype判断链接是否有效
             {
-                MessageBox.Show(this, $"请求百度网盘（{baiduPanUrl}）发生错误，该链接因违规已被禁止", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                Regex regex = new Regex("\"errortype\":(.*?),");
+                Match match = regex.Match(returnContent);
+                if (match.Success)
+                {
+                    string errorTypeStriing = match.Groups[1].Value;
+                    int errorType;
+                    if (int.TryParse(errorTypeStriing, out errorType) == false)
+                    {
+                        MessageBox.Show(this, $"请求百度网盘链接（{baiduPanUrl}）发生错误，无法从返回的HTML中，将errortype转为数字，其值为{errorType}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    if (errorType != -1)
+                    {
+                        if (AppConsts.ERROR_TYPE_TO_DESC.ContainsKey(errorType) == true)
+                        {
+                            MessageBox.Show(this, $"该百度网盘链接（{baiduPanUrl}）已失效，具体原因为：{AppConsts.ERROR_TYPE_TO_DESC[errorType]}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        else
+                        {
+                            MessageBox.Show(this, $"该百度网盘链接（{baiduPanUrl}）已失效，但没有对应的错误码描述，返回错误码为：{errorType}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(this, $"请求百度网盘链接（{baiduPanUrl}）发生错误，无法从返回的HTML中，找到errortype，HTML内容为：{returnContent}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
             if (returnContent.Contains(AppConsts.BAIDU_PAN_URL_INPUT_ACCESS_CODE_TIPS) == false)
             {
@@ -1483,6 +1512,72 @@ namespace BaiduPanCompareTools
             // 在快照浏览窗口中展示
             SnapshootViewerForm snapshootViewer = new SnapshootViewerForm(newSnapshootFilePath, newSnapshootInfo);
             snapshootViewer.ShowDialog();
+        }
+
+        private void BtnViewBaiduPanUrlAndCopyAccessCode_Click(object sender, EventArgs e)
+        {
+            string baiduPanUrl = null;
+            string baiduPanAccessCode = null;
+            string errorString = null;
+            /**
+             * 检查用户输入项目是否正确
+             */
+            // 检查输入的网盘地址
+            baiduPanUrl = TxtBaiduPanUrl.Text.Trim();
+            if (string.IsNullOrEmpty(baiduPanUrl))
+            {
+                MessageBox.Show(this, "请输入百度网盘链接地址", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (baiduPanUrl.StartsWith(AppConsts.BAIDU_PAN_URL_PREFIX, StringComparison.CurrentCultureIgnoreCase) == false)
+            {
+                MessageBox.Show(this, $"输入的百度网盘链接地址非法，请输入以{AppConsts.BAIDU_PAN_URL_PREFIX}开头的地址", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            // 如果是带有提取码的链接，从中获取提取码
+            int baiduPanUrlAccessCodeParamNameIndex = baiduPanUrl.IndexOf(AppConsts.BAIDU_PAN_URL_ACCESS_CODE_PARAM_NAME, StringComparison.CurrentCultureIgnoreCase);
+            if (baiduPanUrlAccessCodeParamNameIndex != -1)
+            {
+                baiduPanAccessCode = baiduPanUrl.Substring(baiduPanUrlAccessCodeParamNameIndex + AppConsts.BAIDU_PAN_URL_ACCESS_CODE_PARAM_NAME.Length);
+                baiduPanUrl = baiduPanUrl.Substring(0, baiduPanUrlAccessCodeParamNameIndex);
+                if (AppConsts.CheckBaiduPanAccessCodeFormat(baiduPanAccessCode, out errorString) == false)
+                {
+                    MessageBox.Show(this, $"从百度网盘链接地址中获取的提取码{baiduPanAccessCode}错误，{errorString}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            // 检查输入的提取码
+            string inputBaiduPanAccessCode = TxtBaiduPanAccessCode.Text.Trim();
+            if (baiduPanUrlAccessCodeParamNameIndex != -1)
+            {
+                // 如果输入的百度网盘链接带提取码，而用户又在提取码输入框输入了，要保证一致
+                if (string.IsNullOrEmpty(inputBaiduPanAccessCode) == false)
+                {
+                    if (inputBaiduPanAccessCode.Equals(baiduPanAccessCode, StringComparison.CurrentCultureIgnoreCase) == false)
+                    {
+                        MessageBox.Show(this, $"从百度网盘链接地址中获取的提取码{baiduPanAccessCode}与在提取码输入框中输入的{inputBaiduPanAccessCode}不一致", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                // 如果输入的百度网盘链接不带提取码，则需要输入提取码
+                if (string.IsNullOrEmpty(inputBaiduPanAccessCode) == true)
+                {
+                    MessageBox.Show(this, "请输入对应的提取码", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                if (AppConsts.CheckBaiduPanAccessCodeFormat(inputBaiduPanAccessCode, out errorString) == false)
+                {
+                    MessageBox.Show(this, $"输入的提取码{baiduPanAccessCode}错误，{errorString}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                baiduPanAccessCode = inputBaiduPanAccessCode;
+            }
+
+            Clipboard.SetText(baiduPanAccessCode);
+            Process.Start("explorer.exe", baiduPanUrl);
         }
     }
 }

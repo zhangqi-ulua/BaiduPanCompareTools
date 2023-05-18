@@ -7,13 +7,13 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <BaseOutputPath>..\..\..\release\</BaseOutputPath>
-    <Version>1.2.0</Version>
+    <Version>1.3.0</Version>
     <Authors>张齐</Authors>
     <Company>张齐</Company>
     <Product>百度网盘对比工具</Product>
     <Copyright>张齐</Copyright>
-    <AssemblyVersion>1.2.0</AssemblyVersion>
-    <FileVersion>1.2.0</FileVersion>
+    <AssemblyVersion>1.3.0</AssemblyVersion>
+    <FileVersion>1.3.0</FileVersion>
     <Description>百度网盘对比工具</Description>
     <PackageProjectUrl>https://github.com/zhangqi-ulua</PackageProjectUrl>
   </PropertyGroup>
